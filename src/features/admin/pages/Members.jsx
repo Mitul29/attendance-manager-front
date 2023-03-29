@@ -18,7 +18,11 @@ const Members = () => {
         alt="background"
       />
       <div className="view__member__wrapper">
-        <div className="tabs__wrapper">
+        <div
+          className={classNames("tabs__wrapper", {
+            members__active: activeTab === "members",
+          })}
+        >
           <button
             className={classNames("tab__btn user__btn", {
               active: activeTab === "users",

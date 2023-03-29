@@ -10,6 +10,11 @@ export const useAxiosGet = () => {
       setIsLoading(true);
       const response = await Axios.get(url, { ...config });
       setIsLoading(false);
+
+      if (response?.meta?.error) {
+        throw response?.meta?.error;
+      }
+
       return { data: response.data };
     } catch (error) {
       setIsLoading(false);
@@ -32,6 +37,11 @@ export const useAxiosPost = () => {
       setIsLoading(true);
       const response = await Axios.post(url, data, { ...config });
       setIsLoading(false);
+
+      if (response?.meta?.error) {
+        throw response?.meta?.error;
+      }
+
       return { data: response.data };
     } catch (error) {
       setIsLoading(false);
@@ -55,6 +65,11 @@ export const useAxiosPut = () => {
       setIsLoading(true);
       const response = await Axios.put(url, data, { ...config });
       setIsLoading(false);
+
+      if (response?.meta?.error) {
+        throw response?.meta?.error;
+      }
+
       return { data: response.data };
     } catch (error) {
       setIsLoading(false);
@@ -78,6 +93,11 @@ export const useAxiosPatch = () => {
       setIsLoading(true);
       const response = await Axios.patch(url, data, { ...config });
       setIsLoading(false);
+
+      if (response?.meta?.error) {
+        throw response?.meta?.error;
+      }
+
       return { data: response.data };
     } catch (error) {
       setIsLoading(false);
@@ -100,6 +120,11 @@ export const useAxiosDelete = () => {
       setIsLoading(true);
       const response = await Axios.delete(url, { ...config });
       setIsLoading(false);
+
+      if (response?.meta?.error) {
+        throw response?.meta?.error;
+      }
+
       return { data: response.data };
     } catch (error) {
       setIsLoading(false);

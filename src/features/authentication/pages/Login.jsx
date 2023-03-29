@@ -69,7 +69,7 @@ const Login = () => {
                 placeholder="Enter your username"
                 {...register("username")}
               />
-              <p>{errors.username?.message}</p>
+              <p className="error">{errors.username?.message}</p>
             </div>
             <div className="form__group">
               <label className="label">Password*</label>
@@ -78,6 +78,7 @@ const Login = () => {
                 placeholder="Enter your password"
                 {...register("password")}
               />
+              <p className="error">{errors.username?.message}</p>
               <button
                 type="button"
                 onClick={() => setShowPass((prev) => !prev)}

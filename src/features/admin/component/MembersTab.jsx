@@ -1,8 +1,11 @@
 import classNames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGetMembers } from "../services/members.services";
 
 const MembersTab = ({ activeTab, debouncedSearchVal }) => {
+  const navigate = useNavigate();
+
   const [members, setMembers] = useState([]);
   const [filterdMembers, setFilteredMembers] = useState([]);
 
@@ -23,8 +26,6 @@ const MembersTab = ({ activeTab, debouncedSearchVal }) => {
       setFilteredMembers(data);
     }
   }, []);
-
-  console.log("HELLO FI", filterdMembers);
 
   useEffect(() => {
     loadMembers();
@@ -63,6 +64,9 @@ const MembersTab = ({ activeTab, debouncedSearchVal }) => {
               </div>
               <div className="contact__wrapper__sn">
                 <h4 className="name">{memberFullName(member)}</h4>
+                <button onClick={() => navigate(`/admin/members/${member.id}`)}>
+                  Edit
+                </button>
                 <p className="attendance__no">
                   <span className="label">Attendance No:</span>
                   <span className="value">{member.attendance_no || "-"}</span>
