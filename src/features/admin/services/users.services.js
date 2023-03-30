@@ -8,6 +8,14 @@ export const useGetUsers = () => {
   return { getUsers, isLoading };
 };
 
+export const useGetAssignedMembersAttendance = () => {
+  const [callApi, { isLoading }] = useAxiosGet();
+  const getAssignedMembersAttendance = async (config = {}) => {
+    return callApi(`/assigned-members-attendance`, { params: config });
+  };
+  return { getAssignedMembersAttendance, isLoading };
+};
+
 export const useChangePassword = () => {
   const [callApi, { isLoading }] = useAxiosPost();
   const changePassword = async (userId, data, config = {}) => {

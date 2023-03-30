@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 
 const Modal = ({
@@ -6,7 +7,8 @@ const Modal = ({
   hasFooter = true,
   cancelBtn = true,
   cancelBtnText = "Cancel",
-  onClickCancel = () => {},
+  showHeaderClose = true,
+  onClickCancel,
   submitBtn = true,
   submitBtnText = "Save",
   onClickSubmit = () => {},
@@ -20,25 +22,33 @@ const Modal = ({
   };
 
   return isOpen ? (
-    <div id="myModal" className="modal">
-      <div className="modal-header">
-        <span className="close">&times;</span>
-        <h2>{title}</h2>
-      </div>
-      <div className="modal-content">
-        <span className="close" onClick={onCancel}>
-          &times;
-        </span>
-        {children}
-      </div>
-      {hasFooter && (
-        <div className="modal-footer">
-          {cancelBtn && <button onClick={onCancel}>{cancelBtnText}</button>}
-          {submitBtn && (
-            <button onClick={onClickSubmit}>{submitBtnText}</button>
+    <div className={classNames("modal__wrapper", { show: isOpen })}>
+      <div className="modal__overllay"></div>
+      <div className="inner__wrapper">
+        <div className="modal__CN">
+          <div className="modal__header">
+            <h2 className="title">{title}</h2>
+            {showHeaderClose && (
+              <button className="close__btn" onClick={onCancel}></button>
+            )}
+          </div>
+          <div className="modal__body">{children}</div>
+          {hasFooter && (
+            <div className="modal__footer">
+              {cancelBtn && (
+                <button className="cancel__btn" onClick={onCancel}>
+                  {cancelBtnText}
+                </button>
+              )}
+              {submitBtn && (
+                <button className="save__btn" onClick={onClickSubmit}>
+                  {submitBtnText}
+                </button>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   ) : null;
 };

@@ -1,6 +1,9 @@
 import React from "react";
 import AddMember from "../features/admin/pages/AddMember";
 import Members from "../features/admin/pages/Members";
+import AddAttendance from "../features/user/pages/AddAttendance";
+import AssignedMembers from "../features/user/pages/AssignedMembers";
+import AttendanceReport from "../features/user/pages/AttendanceReport";
 
 const Login = React.lazy(() =>
   import("../features/authentication/pages/Login")
@@ -32,7 +35,7 @@ export const routes = [
   },
   {
     path: "/admin/members",
-    name: "Members",
+    name: "AdminMembers",
     component: <Members />,
     roles: ["admin"],
     requiresAuth: true,
@@ -49,6 +52,27 @@ export const routes = [
     path: "/",
     name: "Home",
     component: <Home />,
+    roles: ["user"],
+    requiresAuth: true,
+  },
+  {
+    path: "/members",
+    name: "Members",
+    component: <AssignedMembers />,
+    roles: ["user"],
+    requiresAuth: true,
+  },
+  {
+    path: "/attendance/add",
+    name: "AddAttendance",
+    component: <AddAttendance />,
+    roles: ["user"],
+    requiresAuth: true,
+  },
+  {
+    path: "/attendance/report",
+    name: "AttendanceReport",
+    component: <AttendanceReport />,
     roles: ["user"],
     requiresAuth: true,
   },

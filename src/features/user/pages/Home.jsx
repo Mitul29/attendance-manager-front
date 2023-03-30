@@ -20,7 +20,7 @@ const Home = () => {
           <div className="portal__box">
             <div
               className="inner__wrapper"
-              onClick={() => navigate("/admin/members/new")}
+              onClick={() => navigate("/members")}
             >
               <div className="icon__wrapper">
                 <img
@@ -35,7 +35,7 @@ const Home = () => {
           <div className="portal__box">
             <div
               className="inner__wrapper"
-              onClick={() => navigate("/admin/members")}
+              onClick={() => navigate("/attendance/add")}
             >
               <div className="icon__wrapper">
                 <img
@@ -48,7 +48,10 @@ const Home = () => {
             </div>
           </div>
           <div className="portal__box">
-            <div className="inner__wrapper" onClick={() => dispatch(logOut())}>
+            <div
+              className="inner__wrapper"
+              onClick={() => navigate("/attendance/report")}
+            >
               <div className="icon__wrapper">
                 <img className="icon__img" src="/images/profile.png" alt="" />
               </div>
