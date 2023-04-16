@@ -7,7 +7,7 @@ import {
 export const useGetMembers = () => {
   const [callApi, { isLoading }] = useAxiosGet();
   const getMembers = async (config = {}) => {
-    return callApi(`/members`, { params: config });
+    return callApi(`/users`, { params: config });
   };
   return { getMembers, isLoading };
 };
@@ -23,7 +23,7 @@ export const useGetUsersAssignedMembers = () => {
 export const useAddMember = () => {
   const [callApi, { isLoading }] = useAxiosPost();
   const addMember = async (data, config = {}) => {
-    return callApi(`/add-member`, data, config);
+    return callApi(`/users`, data, config);
   };
   return { addMember, isLoading };
 };
@@ -31,7 +31,7 @@ export const useAddMember = () => {
 export const useEditMember = () => {
   const [callApi, { isLoading }] = useAxiosPut();
   const editMember = async (memberId, data, config = {}) => {
-    return callApi(`/edit-member/${memberId}`, data, config);
+    return callApi(`/users/${memberId}`, data, config);
   };
   return { editMember, isLoading };
 };
@@ -39,7 +39,7 @@ export const useEditMember = () => {
 export const useGetMember = () => {
   const [callApi, { isLoading }] = useAxiosGet();
   const getMember = async (memberId, config = {}) => {
-    return callApi(`/members/${memberId}`, config);
+    return callApi(`/users/${memberId}`, config);
   };
   return { getMember, isLoading };
 };

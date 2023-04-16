@@ -16,8 +16,9 @@ const RequiresAuth = ({ children, allowedRoles = [] }) => {
   }
 
   const isAuthorized = allowedRoles.includes(currentUser.role);
+
   if (!isAuthorized) {
-    return <Navigate to="/" />;
+    return <Navigate to={currentUser.role === "admin" ? "/admin" : "/"} />;
   }
 
   return children;

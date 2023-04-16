@@ -1,35 +1,38 @@
-import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
+import { format, startOfDay } from "date-fns";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../../core/components/Modal";
-import { useGetAssignedMembersAttendance } from "../../admin/services/users.services";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../../redux/modules/authSlice";
+import { useGetAttendanceByLeaderId } from "../../admin/services/attendance.services";
+import AddAttendanceItem from "./AddAttendanceItem";
 
-const TODAY_DATE = format(new Date(), "MM/dd/yyyy");
+const TODAY_DATE = format(new Date(), "yyyy-MM-dd");
 
 const AddAttendance = () => {
   const navigate = useNavigate();
+  const currentUser = useSelector(selectCurrentUser);
+
+  const leaderId = currentUser?._id;
 
   const [showSelectDate, setShowSelectDate] = useState(true);
   const [attendanceDate, setAttendanceDate] = useState({
-    value: null,
+    value: TODAY_DATE,
     isValid: true,
   });
   const [assignedMembers, setAssignedMembers] = useState([]);
 
-  const { getAssignedMembersAttendance, isLoading } =
-    useGetAssignedMembersAttendance();
+  const { getAttendanceByLeaderId, isLoading } = useGetAttendanceByLeaderId();
 
   const loadAssignedMembersWithAttendance = async () => {
     if (attendanceDate.value && attendanceDate.isValid) {
-      const date = new Date(attendanceDate.value).setHours(0, 0, 0, 0);
+      const date = startOfDay(new Date(attendanceDate.value));
 
-      const { data, error } = await getAssignedMembersAttendance({ date });
+      const { data, error } = await getAttendanceByLeaderId(leaderId, {
+        date,
+      });
       if (!error && Array.isArray(data)) {
-        const updatedMembers = data.map((m) => {
-          const isPresent = m.attendances[0]?.present;
-          return { ...m, isPresent };
-        });
-        setAssignedMembers(updatedMembers);
+        setAssignedMembers(data);
       }
     }
   };
@@ -48,68 +51,18 @@ const AddAttendance = () => {
         />
         <div className="view__member__wrapper">
           <h2 className="main__title">
-            Welcome, <span className="name">Dhruv Patel</span>
+            Welcome<span className="name">, {currentUser?.name || ""}</span>
           </h2>
           <div className="contant__wrapper">
             <div className="user__card__wrapper">
-              {assignedMembers.map((member) => {
-                return (
-                  <div
-                    key={member.id}
-                    className="user__card__box attendance__users"
-                  >
-                    <div className="inner__wrapper">
-                      <div className="img__wrapper">
-                        <div className="no__img__letter">MJ</div>
-                      </div>
-                      <div className="contact__wrapper__sn">
-                        <h4 className="name">{`${member.firstname || ""} ${
-                          member.lastname || ""
-                        }`}</h4>
-                        <div className="radio__wrapper">
-                          <div className="custom__radio">
-                            <input
-                              id={`${member.id}-p`}
-                              type="radio"
-                              name={`${member.id + "attendance"}`}
-                              //   checked={member.isPresent === true}
-                              //   onChange={(e) => {}}
-                            />
-                            <label className="rc__Label ">Present</label>
-                          </div>
-                          <div className="custom__radio">
-                            <input
-                              id={`${member.id}-a`}
-                              type="radio"
-                              name={`${member.id + "attendance"}`}
-                              //   checked={member.isPresent === false}
-                              //   onChange={() => {}}
-                            />
-                            <label className="rc__Label ">Absent</label>
-                          </div>
-                        </div>
-                        <p className="attendance__no">
-                          <span className="label">Att. No. </span>
-                          <span className="value">1944747</span>
-                        </p>
-                        <div className="contact__wrapper phone">
-                          <a
-                            className="contact__link"
-                            href="tel:+91 84747 74747"
-                          >
-                            +91 84747 74747
-                          </a>
-                        </div>
-                      </div>
-                      <div className="save__btn__wrapper">
-                        <button className="save__btn" type="">
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {assignedMembers.map((member) => (
+                <AddAttendanceItem
+                  key={member._id}
+                  leader={currentUser}
+                  member={member}
+                  date={attendanceDate.value}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -135,6 +88,8 @@ const AddAttendance = () => {
               <input
                 className="date__input"
                 type="date"
+                value={attendanceDate.value}
+                max={format(new Date(), "yyyy-MM-dd")}
                 onChange={(e) => {
                   setAttendanceDate({ value: e.target.value, isValid: true });
                 }}

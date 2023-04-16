@@ -8,13 +8,14 @@ import {
   useAddMember,
   useEditMember,
   useGetMember,
+  useGetMembers,
 } from "../services/members.services";
 import { useNavigate, useParams } from "react-router-dom";
 import useToast from "../../../core/hooks/useToast";
 
 const memberValidation = yup.object().shape({
-  firstname: yup.string().required("Firstname is required."),
-  attendance_no: yup
+  name: yup.string().required("name is required."),
+  attendanceNo: yup
     .number()
     .typeError("Must be a number")
     .required("Attendance No is required."),
@@ -43,24 +44,24 @@ const AddMember = () => {
   const { addMember, isLoading: addMemberLoader } = useAddMember();
   const { editMember, isLoading: editMemberLoader } = useEditMember();
   const { getMember, isLoading: getMembersLoader } = useGetMember();
-  const { getUsers, isLoading: getUsersLoader } = useGetUsers();
+  const { getMembers, isLoading: getLeadersLoader } = useGetMembers();
 
   const isEditMode = params.id !== "new";
 
-  const assign_to = watch("assign_to");
-  const [assignUsers, setAssignUsers] = useState([]);
+  const assignTo = watch("assignTo");
 
-  const loadAssignUsersOptions = async () => {
-    const { data, error } = await getUsers();
+  const [leaders, setLeaders] = useState([]);
+
+  const loadLeaderOptions = async () => {
+    const { data, error } = await getMembers({ isLeader: true });
     if (!error && Array.isArray(data)) {
-      const options = data.map((user) => {
-        const fname = user.userDetails.firstname || "";
-        const lname = user.userDetails.lastname || "";
+      const options = data
+        .map((leader) => {
+          return { label: leader.name, value: leader._id };
+        })
+        .filter((l) => l.value !== params.id);
 
-        return { label: `${fname} ${lname}`, value: user.id };
-      });
-
-      setAssignUsers(options);
+      setLeaders(options);
     }
   };
 
@@ -68,26 +69,25 @@ const AddMember = () => {
     const { data, error } = await getMember(params.id);
     if (!error && data) {
       reset({
-        firstname: data.firstname,
-        middlename: data.middlename,
-        lastname: data.lastname,
-        attendance_no: data.attendance_no,
+        name: data.name,
+        attendanceNo: data.attendanceNo,
         contact: data.contact,
         email: data.email,
-        assign_to: data.assignedUser?.id,
+        address: data.address,
+        assignTo: data.assignTo,
       });
     }
   };
 
   useEffect(() => {
-    loadAssignUsersOptions();
+    loadLeaderOptions();
     if (params.id !== "new") {
       loadEditedMember();
     }
   }, [isEditMode]);
 
   const onSubmit = async (formValues) => {
-    const formData = { ...formValues, role: 1 /* Member */ };
+    const formData = { ...formValues, assignTo: assignTo || null };
 
     if (!isEditMode) {
       const { error } = await addMember(formData);
@@ -100,7 +100,7 @@ const AddMember = () => {
     navigate("/admin/members");
   };
 
-  if (getMembersLoader || getUsersLoader) {
+  if (getMembersLoader || getLeadersLoader) {
     return <h1>Loading...</h1>;
   }
 
@@ -114,7 +114,7 @@ const AddMember = () => {
       <div className="logo__wrapper">
         <img src="/images/logo.png" alt="SMVS" />
       </div>
-      <div className="login__form">
+      <div className="login__form add__member__form">
         <form className="form__wrapper" onSubmit={handleSubmit(onSubmit)}>
           <div className="top__header__form">
             <div className="img__wrapper">
@@ -131,83 +131,77 @@ const AddMember = () => {
             </div>
           </div>
           <div className="form__contant">
-            <div className="double__group">
+            <div className="login__form__body">
+              <div className="double__group">
+                <div className="form__group">
+                  <label className="label">Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter FullName"
+                    {...register("name")}
+                  />
+                  <p className="error">{errors.name?.message}</p>
+                </div>
+                <div className="form__group">
+                  <label className="label">Attendance No</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Attendance No."
+                    {...register("attendanceNo")}
+                  />
+                  <p className="error">{errors.attendanceNo?.message}</p>
+                </div>
+              </div>
+              <div className="double__group">
+                <div className="form__group">
+                  <label className="label">Email</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your email"
+                    {...register("email")}
+                  />
+                </div>
+                <div className="form__group">
+                  <label className="label">Phone</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your phone"
+                    {...register("contact")}
+                  />
+                  <p className="error">{errors.contact?.message}</p>
+                </div>
+              </div>
               <div className="form__group">
-                <label className="label">First Name</label>
+                <label className="label">Address</label>
                 <input
                   type="text"
-                  placeholder="Enter first name"
-                  {...register("firstname")}
-                />
-                <p className="error">{errors.firstname?.message}</p>
-              </div>
-              <div className="form__group">
-                <label className="label">Middle Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter Middle name"
-                  {...register("middlename")}
+                  placeholder="Enter your address"
+                  {...register("address")}
                 />
               </div>
               <div className="form__group">
-                <label className="label">Last Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter last name"
-                  {...register("lastname")}
-                />
-              </div>
-              <div className="form__group">
-                <label className="label">Attendance No</label>
-                <input
-                  type="number"
-                  placeholder="Enter Attendance No."
-                  {...register("attendance_no")}
-                />
-                <p className="error">{errors.attendance_no?.message}</p>
-              </div>
-            </div>
-            <div className="form__group">
-              <label className="label">Email</label>
-              <input
-                type="text"
-                placeholder="Enter your email"
-                {...register("email")}
-              />
-            </div>
-            <div className="form__group">
-              <label className="label">Phone</label>
-              <input
-                type="text"
-                placeholder="Enter your phone"
-                {...register("contact")}
-              />
-              <p className="error">{errors.contact?.message}</p>
-            </div>
-            <div className="form__group">
-              <label className="label">Assign To</label>
+                <label className="label">Assign To</label>
 
-              <ReactSelect
-                className=""
-                key={getValues("assign_to")}
-                options={assignUsers}
-                value={assignUsers.find(
-                  (e) => e.value === getValues("assign_to")
-                )}
-                onChange={(e) => setValue("assign_to", e?.value)}
-                isClearable
-                isSearchable
-              />
-            </div>
-            <div className="rem__sub__wrapper">
-              <div className="submit__wrapper">
-                <button
-                  className="submit__btn"
-                  type="submit"
-                  disabled={addMemberLoader || editMemberLoader}
-                >
-                  {!isEditMode ? "+ Add" : "Update"}
-                </button>
+                <ReactSelect
+                  className=""
+                  key={getValues("assignTo")}
+                  options={leaders}
+                  value={leaders.find((e) => e.value === getValues("assignTo"))}
+                  onChange={(e) => setValue("assignTo", e?.value)}
+                  isClearable
+                  isSearchable
+                />
+              </div>
+              <div className="rem__sub__wrapper">
+                <div className="submit__wrapper">
+                  <button
+                    className="submit__btn"
+                    type="submit"
+                    disabled={addMemberLoader || editMemberLoader}
+                  >
+                    {!isEditMode ? "+ Add" : "Update"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

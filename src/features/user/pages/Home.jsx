@@ -9,7 +9,6 @@ const Home = () => {
 
   return (
     <div>
-      <button onClick={() => dispatch(logOut())}>Logout</button>
       <div className="portal__page">
         <img
           className="background__img"
@@ -56,6 +55,14 @@ const Home = () => {
                 <img className="icon__img" src="/images/profile.png" alt="" />
               </div>
               <h3 className="title">Show Report</h3>
+            </div>
+          </div>
+          <div className="portal__box">
+            <div className="inner__wrapper" onClick={() => dispatch(logOut())}>
+              <div className="icon__wrapper">
+                <img className="icon__img" src="/images/profile.png" alt="" />
+              </div>
+              <h3 className="title">Logout</h3>
             </div>
           </div>
         </div>

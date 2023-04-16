@@ -3,6 +3,7 @@ import React from "react";
 
 const Modal = ({
   title,
+  wrapperClass = "",
   isOpen,
   hasFooter = true,
   cancelBtn = true,
@@ -11,6 +12,7 @@ const Modal = ({
   onClickCancel,
   submitBtn = true,
   submitBtnText = "Save",
+  submitBtnDisabled = false,
   onClickSubmit = () => {},
   submitBtnLoader = false,
   closeModal,
@@ -22,7 +24,9 @@ const Modal = ({
   };
 
   return isOpen ? (
-    <div className={classNames("modal__wrapper", { show: isOpen })}>
+    <div
+      className={classNames("modal__wrapper", wrapperClass, { show: isOpen })}
+    >
       <div className="modal__overllay"></div>
       <div className="inner__wrapper">
         <div className="modal__CN">
@@ -41,7 +45,11 @@ const Modal = ({
                 </button>
               )}
               {submitBtn && (
-                <button className="save__btn" onClick={onClickSubmit}>
+                <button
+                  className="save__btn"
+                  disabled={submitBtnDisabled}
+                  onClick={onClickSubmit}
+                >
                   {submitBtnText}
                 </button>
               )}
