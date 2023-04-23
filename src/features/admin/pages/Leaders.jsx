@@ -1,9 +1,11 @@
+import classNames from "classnames";
 import React, { useState } from "react";
 import useDebounce from "../../../core/hooks/useDebounce";
-import MembersTab from "../component/MembersTab";
+import LeadersTab from "../component/LeadersTab";
 import Header from "../../../core/components/Header";
 
-const Members = () => {
+const Leaders = () => {
+  const [activeTab, setActiveTab] = useState("leaders");
   const [searchVal, setSearchVal] = useState("");
 
   const debouncedSearchVal = useDebounce(searchVal);
@@ -24,7 +26,7 @@ const Members = () => {
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
           />
-          <button type="button" className="submit__btn">
+          <button type="submit" className="submit__btn">
             <svg
               version="1.1"
               id="Layer_1"
@@ -46,7 +48,7 @@ const Members = () => {
         </form>
 
         <div className="contant__wrapper">
-          <MembersTab debouncedSearchVal={debouncedSearchVal} />
+          <LeadersTab debouncedSearchVal={debouncedSearchVal} />
         </div>
       </div>
       <img className="nagar__img" src="/images/building__img.png" alt="" />
@@ -54,4 +56,4 @@ const Members = () => {
   );
 };
 
-export default Members;
+export default Leaders;

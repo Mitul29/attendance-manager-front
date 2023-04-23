@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../../../core/components/Modal";
 import useDebounce from "../../../core/hooks/useDebounce";
+import { getProfileImgLetters } from "../../../helper/commonHelper";
 
 const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
   const [searchVal, setSearchVal] = useState("");
@@ -69,7 +70,9 @@ const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
             <div className="user__card__box" key={member._id}>
               <div className="inner__wrapper">
                 <div className="img__wrapper">
-                  <img src="/images/user__img.png" alt="" />
+                  <div className="no__img__letter">
+                    {getProfileImgLetters(member.name)}
+                  </div>
                 </div>
                 <div className="contact__wrapper__sn">
                   <h4 className="name">{member.name}</h4>
@@ -82,7 +85,7 @@ const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
                       {member.contact || "-"}
                     </span>
                   </div>
-                  <div className="contact__wrapper phone">
+                  <div className="contact__wrapper email">
                     <span className="contact__link">{member.email}</span>
                   </div>
                   {member.role === "leader" && member.assignTo && (

@@ -4,6 +4,7 @@ import Members from "../features/admin/pages/Members";
 import AddAttendance from "../features/user/pages/AddAttendance";
 import AssignedMembers from "../features/user/pages/AssignedMembers";
 import AttendanceReport from "../features/user/pages/AttendanceReport";
+import Leaders from "../features/admin/pages/Leaders";
 
 const Login = React.lazy(() =>
   import("../features/authentication/pages/Login")
@@ -26,17 +27,24 @@ export const routes = [
   },
 
   /* Authenticated Routes */
-  {
-    path: "/admin",
-    name: "Admin-Home",
-    component: <AdminHome />,
-    roles: ["admin"],
-    requiresAuth: true,
-  },
+  // {
+  //   path: "/admin",
+  //   name: "Admin-Home",
+  //   component: <AdminHome />,
+  //   roles: ["admin"],
+  //   requiresAuth: true,
+  // },
   {
     path: "/admin/members",
     name: "AdminMembers",
     component: <Members />,
+    roles: ["admin"],
+    requiresAuth: true,
+  },
+  {
+    path: "/admin/leaders",
+    name: "AdminLeaders",
+    component: <Leaders />,
     roles: ["admin"],
     requiresAuth: true,
   },
@@ -48,13 +56,13 @@ export const routes = [
     requiresAuth: true,
   },
 
-  {
-    path: "/",
-    name: "Home",
-    component: <Home />,
-    roles: ["leader"],
-    requiresAuth: true,
-  },
+  // {
+  //   path: "/",
+  //   name: "Home",
+  //   component: <Home />,
+  //   roles: ["leader"],
+  //   requiresAuth: true,
+  // },
   {
     path: "/members",
     name: "Members",
@@ -70,7 +78,7 @@ export const routes = [
     requiresAuth: true,
   },
   {
-    path: "/attendance/report",
+    path: "/report",
     name: "AttendanceReport",
     component: <AttendanceReport />,
     roles: ["leader"],

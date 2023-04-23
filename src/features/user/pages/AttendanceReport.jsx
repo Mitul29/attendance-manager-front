@@ -1,11 +1,12 @@
 import _ from "lodash";
-import { format, parse, startOfDay } from "date-fns";
-import React, { useEffect, useMemo, useState } from "react";
+import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../redux/modules/authSlice";
 import { useGetAllAttendance } from "../../admin/services/attendance.services";
 import useDebounce from "../../../core/hooks/useDebounce";
 import AttendanceReportItem from "./AttendanceReportItem";
+import Header from "../../../core/components/Header";
 
 const TODAY_DATE = format(new Date(), "yyyy-MM-dd");
 
@@ -47,6 +48,7 @@ const AttendanceReport = () => {
 
   return (
     <div className="report__page">
+      <Header />
       <img
         className="background__img"
         src="/images/background__img_2.png"

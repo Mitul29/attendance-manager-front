@@ -1,3 +1,4 @@
+import SiteLoader from "./core/components/SiteLoader";
 import useAuth from "./core/hooks/useAuth";
 import RouteComponent from "./routes";
 
@@ -6,7 +7,7 @@ function App() {
 
   return (
     <div className="App">
-      {isInitialized && !isLoading ? <RouteComponent /> : <>Loading...</>}
+      {isInitialized && !isLoading ? <RouteComponent /> : <SiteLoader />}
     </div>
   );
 }

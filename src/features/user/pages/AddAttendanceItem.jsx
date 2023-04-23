@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAddAttendance } from "../../admin/services/attendance.services";
 import useToast from "../../../core/hooks/useToast";
 import Modal from "../../../core/components/Modal";
+import { getProfileImgLetters } from "../../../helper/commonHelper";
 
 const AddAttendanceItem = ({ member, date }) => {
   const remarkRef = useRef(null);
@@ -20,7 +21,7 @@ const AddAttendanceItem = ({ member, date }) => {
   }, [member]);
 
   const saveAttendance = async () => {
-    const addData = { userId: member._id, date, ...attendance };
+    const addData = { userId: member._id, date: new Date(date), ...attendance };
     const { error } = await addAttendance(addData);
     if (error) {
       setToastMessage({ message: error, type: "error" });
@@ -33,7 +34,9 @@ const AddAttendanceItem = ({ member, date }) => {
       <div className="user__card__box attendance__users">
         <div className="inner__wrapper">
           <div className="img__wrapper">
-            <div className="no__img__letter">MJ</div>
+            <div className="no__img__letter">
+              {getProfileImgLetters(member.name)}
+            </div>
           </div>
           <div className="contact__wrapper__sn">
             <h4 className="name">{member.name}</h4>

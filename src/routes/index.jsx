@@ -4,6 +4,7 @@ import RequiresAuth from "../features/authentication/components/RequiresAuth";
 import RequiresUnAuth from "../features/authentication/components/RequiresUnAuth";
 import NotFound from "../features/common/pages/NotFound";
 import { routes } from "./routes";
+import SiteLoader from "../core/components/SiteLoader";
 
 const RouteComponent = () => {
   const privateRoutes = routes.filter((r) => r.requiresAuth);
@@ -21,7 +22,7 @@ const RouteComponent = () => {
               key={idx}
               path={route.path}
               element={
-                <Suspense fallback={<h1>Loading...</h1>}>
+                <Suspense fallback={<SiteLoader />}>
                   <RequiresUnAuth>{route.component}</RequiresUnAuth>
                 </Suspense>
               }
@@ -37,7 +38,7 @@ const RouteComponent = () => {
               key={idx}
               path={route.path}
               element={
-                <Suspense fallback={<h1>Loading...</h1>}>
+                <Suspense fallback={<SiteLoader />}>
                   <RequiresAuth allowedRoles={route.roles}>
                     {route.component}
                   </RequiresAuth>
@@ -55,9 +56,7 @@ const RouteComponent = () => {
               key={idx}
               path={route.path}
               element={
-                <Suspense fallback={<h1>Loading...</h1>}>
-                  {route.component}
-                </Suspense>
+                <Suspense fallback={<SiteLoader />}>{route.component}</Suspense>
               }
             />
           )

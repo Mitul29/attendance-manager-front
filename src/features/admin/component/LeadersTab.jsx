@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 
+import Modal from "../../../core/components/Modal";
 import ChangePassModal from "./ChangePassModal";
 import SubMembersModal from "./SubMembersModal";
 import {
@@ -10,7 +11,9 @@ import {
 } from "../services/users.services";
 import useToast from "../../../core/hooks/useToast";
 
-const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
+import { getProfileImgLetters } from "../../../helper/commonHelper";
+
+const LeadersTab = ({ debouncedSearchVal }) => {
   const navigate = useNavigate();
 
   const [leaders, setLeaders] = useState([]);
@@ -18,6 +21,7 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
 
   const [changePassId, setChangePassId] = useState(null);
   const [leaderId, setLeaderId] = useState(null);
+  const [currentDeleteLead, setCurrentDeleteLead] = useState(null);
 
   const { setToastMessage } = useToast();
   const { getLeaders } = useGetLeadersWithMembers();
@@ -38,9 +42,11 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
     const { error } = await removeLeader(leaderId);
 
     if (error) {
-      setToastMessage({ message: error, type: "error" });
+      setCurrentDeleteLead(null);
+      return setToastMessage({ message: error, type: "error" });
     }
 
+    setCurrentDeleteLead(null);
     setToastMessage({ message: "Removed Successfully.", type: "success" });
     loadLeaders();
   };
@@ -69,11 +75,7 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
 
   return (
     <>
-      <div
-        className={classNames("user__card__wrapper", {
-          hidden: activeTab !== "leaders",
-        })}
-      >
+      <div className={classNames("user__card__wrapper")}>
         {filterdLeaders.map((leader) => {
           return (
             <div
@@ -82,7 +84,9 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
             >
               <div className="inner__wrapper">
                 <div className="img__wrapper">
-                  <img src="/images/user__img.png" alt="" />
+                  <div className="no__img__letter">
+                    {getProfileImgLetters(leader.name)}
+                  </div>
                 </div>
                 <div className="contact__wrapper__sn">
                   <h4 className="name">
@@ -90,7 +94,11 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
                     <button
                       className="edit__btn"
                       type="button"
-                      onClick={() => navigate(`/admin/members/${leader._id}`)}
+                      onClick={() =>
+                        navigate(`/admin/members/${leader._id}`, {
+                          state: { from: "leaders" },
+                        })
+                      }
                     >
                       <img src="/images/edit__icon.png" alt="" />
                     </button>
@@ -102,13 +110,14 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
                   </p>
                   <p className="attendance__no">
                     <span className="label">Password:</span>
-                    <span className="value">******</span>
+                    <span className="value">****** </span>
                     <button
                       className="edit__btn"
                       type="button"
                       onClick={() => setChangePassId(leader._id)}
                     >
                       Edit
+                      {/* <img src="/images/edit_password.png" alt="" /> */}
                     </button>
                   </p>
                   <p className="attendance__no">
@@ -120,7 +129,7 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
                       {leader.contact || "-"}
                     </span>
                   </div>
-                  <div className="contact__wrapper phone">
+                  <div className="contact__wrapper email">
                     <span className="contact__link">{leader.email}</span>
                   </div>
                   <div className="sub__member">
@@ -179,7 +188,7 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
                     disabled={removeLeadLoader}
                     onClick={() => {
                       if (leader.assignTo) {
-                        removeFromLeader(leader._id);
+                        setCurrentDeleteLead(leader);
                       }
                     }}
                   >
@@ -211,6 +220,19 @@ const LeadersTab = ({ activeTab, debouncedSearchVal }) => {
           setLeaderId={setLeaderId}
         />
       )}
+
+      {/* Remove Leader Alert */}
+      <Modal
+        isOpen={currentDeleteLead}
+        onClickCancel={() => setCurrentDeleteLead(null)}
+        onClickSubmit={() => removeFromLeader(currentDeleteLead._id)}
+        title="Are You Sure?"
+        submitBtnText="Yes"
+      >
+        Are you sure you want to remove
+        <b> {currentDeleteLead?.name || ""} </b>
+        from leader?
+      </Modal>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { format, startOfDay } from "date-fns";
+import { format } from "date-fns";
 import React, { useMemo, useState } from "react";
 
 const AttendanceReportItem = ({ member, allMembers }) => {
@@ -10,7 +10,7 @@ const AttendanceReportItem = ({ member, allMembers }) => {
   const filterdDates = useMemo(() => {
     const allDates = allMembers.reduce((prev, curr) => {
       curr.attendance.forEach((at) => {
-        const date = startOfDay(new Date(at.date)).getTime();
+        const date = new Date(at.date).getTime();
         if (!prev.includes(date)) {
           prev = [...prev, date].sort((a, b) => b - a);
         }
@@ -22,9 +22,7 @@ const AttendanceReportItem = ({ member, allMembers }) => {
 
   const allAttendance = filterdDates.map((date) => {
     const isExist = attendances.find((at) => {
-      return (
-        startOfDay(new Date(at.date)).getTime() === new Date(date).getTime()
-      );
+      return new Date(at.date).getTime() === new Date(date).getTime();
     });
 
     return {

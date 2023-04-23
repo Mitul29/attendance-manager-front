@@ -10,8 +10,10 @@ import {
   useGetMember,
   useGetMembers,
 } from "../services/members.services";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useToast from "../../../core/hooks/useToast";
+import SiteLoader from "../../../core/components/SiteLoader";
+import Header from "../../../core/components/Header";
 
 const memberValidation = yup.object().shape({
   name: yup.string().required("name is required."),
@@ -24,8 +26,9 @@ const memberValidation = yup.object().shape({
 });
 
 const AddMember = () => {
-  const navigate = useNavigate();
   const params = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -97,15 +100,16 @@ const AddMember = () => {
       if (error) return setToastMessage({ message: error, type: "error" });
     }
 
-    navigate("/admin/members");
+    navigate(`/admin/${location.state?.from || "members"}`);
   };
 
   if (getMembersLoader || getLeadersLoader) {
-    return <h1>Loading...</h1>;
+    return <SiteLoader />;
   }
 
   return (
     <div className="login__page">
+      <Header />
       <img
         className="background__img"
         src="/images/background__img_2.png"
@@ -115,6 +119,13 @@ const AddMember = () => {
         <img src="/images/logo.png" alt="SMVS" />
       </div>
       <div className="login__form add__member__form">
+        <button
+          onClick={() => {
+            navigate(`/admin/${location.state?.from || "members"}`);
+          }}
+        >
+          Back
+        </button>
         <form className="form__wrapper" onSubmit={handleSubmit(onSubmit)}>
           <div className="top__header__form">
             <div className="img__wrapper">
@@ -122,11 +133,11 @@ const AddMember = () => {
             </div>
             <div className="cn__wrapper">
               <h1 className="title">
-                {!isEditMode ? "Add Member" : "Update Member"}{" "}
+                {!isEditMode ? "Add User" : "Update User"}{" "}
               </h1>
               <p className="text">
                 Please fill up below form in order to{" "}
-                {!isEditMode ? "add" : "update"} member
+                {!isEditMode ? "add" : "update"} user
               </p>
             </div>
           </div>
@@ -160,6 +171,7 @@ const AddMember = () => {
                     placeholder="Enter your email"
                     {...register("email")}
                   />
+                  <p className="error">{errors.email?.message}</p>
                 </div>
                 <div className="form__group">
                   <label className="label">Phone</label>

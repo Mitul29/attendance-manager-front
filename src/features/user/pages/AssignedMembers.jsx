@@ -1,10 +1,13 @@
 import _ from "lodash";
+import classNames from "classnames";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useGetAssignedMembers } from "../../admin/services/users.services";
 import { selectCurrentUser } from "../../../redux/modules/authSlice";
 import useDebounce from "../../../core/hooks/useDebounce";
-import classNames from "classnames";
+import SiteLoader from "../../../core/components/SiteLoader";
+import Header from "../../../core/components/Header";
+import { getProfileImgLetters } from "../../../helper/commonHelper";
 
 const AssignedMembers = () => {
   const currentUser = useSelector(selectCurrentUser);
@@ -49,11 +52,12 @@ const AssignedMembers = () => {
   }
 
   if (isLoading) {
-    <div>Loading...</div>;
+    <SiteLoader />;
   }
 
   return (
     <div className="view__member__page">
+      <Header />
       <img
         className="background__img"
         src="/images/background__img_2.png"
@@ -101,7 +105,9 @@ const AssignedMembers = () => {
                 >
                   <div className="inner__wrapper">
                     <div className="img__wrapper">
-                      <img src="/images/user__img.png" alt="" />
+                      <div className="no__img__letter">
+                        {getProfileImgLetters(member.name)}
+                      </div>
                     </div>
                     <div className="contact__wrapper__sn">
                       <h4 className="name">

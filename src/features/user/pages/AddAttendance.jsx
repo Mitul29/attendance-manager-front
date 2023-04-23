@@ -1,4 +1,4 @@
-import { format, startOfDay } from "date-fns";
+import { format } from "date-fns";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../../core/components/Modal";
@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../redux/modules/authSlice";
 import { useGetAttendanceByLeaderId } from "../../admin/services/attendance.services";
 import AddAttendanceItem from "./AddAttendanceItem";
+import SiteLoader from "../../../core/components/SiteLoader";
+import Header from "../../../core/components/Header";
 
 const TODAY_DATE = format(new Date(), "yyyy-MM-dd");
 
@@ -26,7 +28,7 @@ const AddAttendance = () => {
 
   const loadAssignedMembersWithAttendance = async () => {
     if (attendanceDate.value && attendanceDate.isValid) {
-      const date = startOfDay(new Date(attendanceDate.value));
+      const date = new Date(attendanceDate.value);
 
       const { data, error } = await getAttendanceByLeaderId(leaderId, {
         date,
@@ -38,12 +40,13 @@ const AddAttendance = () => {
   };
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return <SiteLoader />;
   }
 
   return (
     <>
       <div className="view__member__page attendance__page">
+        <Header />
         <img
           className="background__img"
           src="/images/background__img_2.png"
@@ -84,7 +87,7 @@ const AddAttendance = () => {
       >
         <form>
           <div className="form__group">
-            <div className="date__filter">
+            <div className="date__filter full">
               <input
                 className="date__input"
                 type="date"

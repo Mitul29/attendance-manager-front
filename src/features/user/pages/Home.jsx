@@ -47,10 +47,7 @@ const Home = () => {
             </div>
           </div>
           <div className="portal__box">
-            <div
-              className="inner__wrapper"
-              onClick={() => navigate("/attendance/report")}
-            >
+            <div className="inner__wrapper" onClick={() => navigate("/report")}>
               <div className="icon__wrapper">
                 <img className="icon__img" src="/images/profile.png" alt="" />
               </div>

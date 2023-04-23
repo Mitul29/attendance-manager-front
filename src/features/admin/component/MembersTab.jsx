@@ -3,8 +3,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetMembers } from "../services/members.services";
 import MakeLeaderModal from "./MakeLeaderModal";
+import { getProfileImgLetters } from "../../../helper/commonHelper";
 
-const MembersTab = ({ activeTab, debouncedSearchVal }) => {
+const MembersTab = ({ debouncedSearchVal }) => {
   const navigate = useNavigate();
 
   const [members, setMembers] = useState([]);
@@ -47,11 +48,7 @@ const MembersTab = ({ activeTab, debouncedSearchVal }) => {
 
   return (
     <>
-      <div
-        className={classNames("user__card__wrapper", {
-          hidden: activeTab !== "members",
-        })}
-      >
+      <div className={classNames("user__card__wrapper")}>
         {filterdMembers.map((member) => {
           return (
             <div
@@ -60,7 +57,9 @@ const MembersTab = ({ activeTab, debouncedSearchVal }) => {
             >
               <div className="inner__wrapper">
                 <div className="img__wrapper">
-                  <img src="/images/user__img.png" alt="" />
+                  <div className="no__img__letter">
+                    {getProfileImgLetters(member.name)}
+                  </div>
                 </div>
                 <div className="contact__wrapper__sn">
                   <h4 className="name">
@@ -82,7 +81,7 @@ const MembersTab = ({ activeTab, debouncedSearchVal }) => {
                       {member.contact || "-"}
                     </span>
                   </div>
-                  <div className="contact__wrapper phone">
+                  <div className="contact__wrapper email">
                     <span className="contact__link" role="button">
                       {member.email}
                     </span>
