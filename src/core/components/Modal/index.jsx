@@ -1,5 +1,6 @@
-import classNames from "classnames";
 import React from "react";
+import classNames from "classnames";
+import Button from "../Button";
 
 const Modal = ({
   title,
@@ -45,13 +46,16 @@ const Modal = ({
                 </button>
               )}
               {submitBtn && (
-                <button
-                  className="save__btn"
-                  disabled={submitBtnDisabled}
-                  onClick={onClickSubmit}
-                >
-                  {submitBtnText}
-                </button>
+                <>
+                  <Button
+                    className="save__btn"
+                    isLoading={submitBtnLoader}
+                    disabled={submitBtnLoader || submitBtnDisabled}
+                    onClick={onClickSubmit}
+                  >
+                    {submitBtnText}
+                  </Button>
+                </>
               )}
             </div>
           )}

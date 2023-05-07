@@ -1,24 +1,18 @@
 import { format } from "date-fns";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AttendanceReportItem = ({ member, allMembers }) => {
+const AttendanceReportItem = ({
+  member,
+  filterdDates,
+  disableChildReport = false,
+}) => {
+  const navigate = useNavigate();
+
   const attendances = member.attendance || [];
   const totalPresent = attendances.filter((att) => att.present).length;
 
   const [isOpen, setIsOpen] = useState(false);
-
-  const filterdDates = useMemo(() => {
-    const allDates = allMembers.reduce((prev, curr) => {
-      curr.attendance.forEach((at) => {
-        const date = new Date(at.date).getTime();
-        if (!prev.includes(date)) {
-          prev = [...prev, date].sort((a, b) => b - a);
-        }
-      });
-      return prev;
-    }, []);
-    return allDates.map((d) => new Date(d));
-  }, [allMembers]);
 
   const allAttendance = filterdDates.map((date) => {
     const isExist = attendances.find((at) => {
@@ -26,7 +20,7 @@ const AttendanceReportItem = ({ member, allMembers }) => {
     });
 
     return {
-      present: isExist ? isExist.date : false,
+      present: isExist ? isExist.present : false,
       remark: isExist?.remark ? isExist.remark : "-",
       date: format(new Date(date), "dd-MM-yyyy"),
     };
@@ -36,12 +30,36 @@ const AttendanceReportItem = ({ member, allMembers }) => {
     <div className="report__box">
       <div
         className="report__header"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (allAttendance.length) {
+            setIsOpen((prev) => !prev);
+          }
+        }}
       >
-        <h4 className="name">{member.name}</h4>
-        <p className="text">
+        <h4 className="name">
+          {member.name} {member.role === "leader" && "(Lead)"}
+        </h4>
+        <div className="flex mt-1">
+          <p className="text mr-5">Total Sabha: {allAttendance.length}</p>
+          <p className="text">
+            Present/Absent: {totalPresent}/{allAttendance.length - totalPresent}
+          </p>
+        </div>
+        <div className="name mt-2">
+          {!disableChildReport && member.role === "leader" && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/report/${member._id}`);
+              }}
+            >
+              View Child Report
+            </button>
+          )}
+        </div>
+        {/* <p className="text">
           Attendance {totalPresent}/{allAttendance.length}
-        </p>
+        </p> */}
       </div>
       {isOpen && (
         <div className="report__body">

@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from "react";
-import Modal from "../../../core/components/Modal";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+
+import useToast from "../../../core/hooks/useToast";
 import useDebounce from "../../../core/hooks/useDebounce";
+import { useRemoveLeader } from "../services/users.services";
 import { getProfileImgLetters } from "../../../helper/commonHelper";
+
+import Modal from "../../../core/components/Modal";
+import ChangePassModal from "./ChangePassModal";
+import SubMemberChildModal from "./SubMemberChildModal";
 
 const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
   const [searchVal, setSearchVal] = useState("");
   const debouncedSearchVal = useDebounce(searchVal);
+
+  const [subLeaderId, setSubLeaderId] = useState(null);
+  const [changePassId, setChangePassId] = useState(null);
+  const [currentDeleteLead, setCurrentDeleteLead] = useState(null);
+
+  const { setToastMessage } = useToast();
+  const { removeLeader, isLoading: removeLeadLoader } = useRemoveLeader();
 
   const assignedMembers = leader.assignedMembers;
 
@@ -30,6 +46,19 @@ const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
     setFilteredMembers(filterdMembers);
   }, [debouncedSearchVal]);
 
+  const removeFromLeader = async (leaderId) => {
+    const { error } = await removeLeader(leaderId);
+
+    if (error) {
+      setCurrentDeleteLead(null);
+      return setToastMessage({ message: error, type: "error" });
+    }
+
+    setCurrentDeleteLead(null);
+    setToastMessage({ message: "Removed Successfully.", type: "success" });
+    setLeaderId(null);
+  };
+
   return (
     <Modal
       isOpen={leaderId}
@@ -37,33 +66,19 @@ const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
       onClickCancel={() => setLeaderId(null)}
       hasFooter={false}
     >
-      <form className="search__wrapper">
+      <div className="search__wrapper">
         <input
-          type="search"
-          placeholder="Search members"
+          type="text"
+          placeholder="Search..."
           value={searchVal}
           onChange={(e) => setSearchVal(e.target.value)}
         />
-        <button type="button" className="submit__btn">
-          <svg
-            version="1.1"
-            id="Layer_1"
-            x="0px"
-            y="0px"
-            viewBox="0 0 500 500"
-            style={{ enableBackground: "new 0 0 500 500" }}
-          >
-            <path
-              style={{ fill: "#A47046" }}
-              d="M456,495c-8.4-2.6-14.2-8.5-20.1-14.6c-35.6-37.2-71.3-74.2-107-111.3c-1.2-1.3-2.3-2.7-3.5-4.1
-								c-53.3,35.3-110.4,45.1-171.3,27c-45.1-13.4-81-40.5-107-79.7C-9.2,227.5,7.2,116.3,85.6,51.1c74.6-62,179.9-60.7,252.7,0.6
-								c41.4,34.9,65.3,79.7,70,133.9c4.7,54.1-11.1,102.2-45.4,144.5c2.3,2.4,4.5,4.7,6.7,7c36,37.4,72,74.9,108,112.3
-								c11.2,11.7,12.2,27.1,1.5,37.5c-3.7,3.6-9.1,5.4-13.8,8.1C462.3,495,459.1,495,456,495z M211.7,57C131.3,57,65.8,122.4,65.6,202.9
-								c-0.2,80.4,66.1,146.7,146.2,146.2c80.8-0.5,145.9-65.7,145.8-146.1C357.6,122.5,292.1,57.1,211.7,57z"
-            ></path>
-          </svg>
-        </button>
-      </form>
+        {!searchVal && (
+          <button type="button" className="submit__btn">
+            <FontAwesomeIcon icon={faSearch} color="#A47046" fill="#A47046" />
+          </button>
+        )}
+      </div>
       <div className="user__card__wrapper">
         {filterdMembers.map((member) => {
           return (
@@ -88,6 +103,54 @@ const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
                   <div className="contact__wrapper email">
                     <span className="contact__link">{member.email}</span>
                   </div>
+                  <div className="sub__member">
+                    <div className="inner__sub__member">
+                      <span className="label">SubMembers: </span>
+                      <span className="value">
+                        {member?.assignedMembers?.length}
+                      </span>
+                      <button
+                        className="view__member__btn"
+                        type="button"
+                        onClick={() => setSubLeaderId(member._id)}
+                      >
+                        <svg
+                          version="1.1"
+                          id="Layer_1"
+                          x="0px"
+                          y="0px"
+                          viewBox="0 0 500 500"
+                          style={{ enableBackground: "new 0 0 500 500" }}
+                        >
+                          <path
+                            d="M495,253.1c-2.4,3.9-4.3,8.2-7.1,11.7c-34.5,43.2-74.5,80.3-122.6,108c-31.7,18.2-65.4,30.5-102.2,33c-30,2-59-3-87-13.7
+													c-42.3-16.1-78.6-41.5-111.8-71.7c-19.5-17.7-37.3-37-53.5-57.8c-7-8.9-7-15.7,0-24.6c34.7-44.1,75.1-81.8,123.9-110
+													c38.3-22.1,79.2-35.4,124.1-33.5c30.8,1.4,59.9,9.7,87.5,23.2c57.9,28.4,104.3,70.7,143.9,120.9c2,2.6,3.2,5.8,4.8,8.7
+													C495,249.3,495,251.2,495,253.1z M42,249.9c1.8,2.1,3,3.8,4.4,5.2c14.9,15.3,29.1,31.2,44.9,45.6c30.3,27.7,64.1,50.2,103.4,63.6
+													c23.5,8,47.6,11.4,72.4,8.7c31.8-3.5,60.6-15.3,87.7-31.5c35.3-21.1,65.5-48.4,92.8-78.9c3.6-4,7-8.1,10.8-12.6
+													c-9.4-10.2-18.2-20.2-27.6-29.7c-31.5-32-66.4-59.4-107.9-77.5c-20.7-9-42.3-14.9-65-16c-34.7-1.6-66.7,8.1-97.1,23.8
+													c-34,17.6-63.4,41.3-90.2,68.4C60.9,229,51.7,239.5,42,249.9z"
+                          ></path>
+                          <path
+                            d="M347,250.7c-0.4,53.6-44.1,96.9-97.3,96.3c-53.6-0.6-96.4-43.9-96.1-97.1c0.4-53.7,44.1-96.9,97.3-96.3
+													C304.5,154.2,347.4,197.5,347,250.7z M314.7,250.5c0.2-35.4-28.4-64.3-64.2-64.7c-35.4-0.4-64.9,29-64.8,64.6
+													c0.1,35.5,28.9,64.4,64.4,64.4C285.7,314.9,314.5,286.1,314.7,250.5z"
+                          ></path>
+                          <g className="hide__line">
+                            <path
+                              d="M79.8,399.2L79.8,399.2c-6.1-6.1-6.1-16.1,0-22.2L375.5,81.2c6.1-6.1,16.1-6.1,22.2,0l0,0c6.1,6.1,6.1,16.1,0,22.2
+														L102.1,399.2C95.9,405.3,86,405.3,79.8,399.2z"
+                            ></path>
+                            <path
+                              style={{ fill: "#A47046" }}
+                              d="M102.1,421.4L102.1,421.4c-6.1-6.1-6.1-16.1,0-22.2l295.7-295.7c6.1-6.1,16.1-6.1,22.2,0v0
+														c6.1,6.1,6.1,16.1,0,22.2L124.3,421.4C118.2,427.5,108.2,427.5,102.1,421.4z"
+                            ></path>
+                          </g>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                   {member.role === "leader" && member.assignTo && (
                     <div className="assign__tag__text">SubLeader</div>
                   )}
@@ -97,6 +160,34 @@ const SubMembersModal = ({ leader, leaderId, setLeaderId }) => {
           );
         })}
       </div>
+      {changePassId && (
+        <ChangePassModal
+          key={changePassId}
+          changePassId={changePassId}
+          setChangePassId={setChangePassId}
+        />
+      )}
+
+      {subLeaderId && (
+        <SubMemberChildModal
+          key={subLeaderId}
+          subLeaderId={subLeaderId}
+          setSubLeaderId={setSubLeaderId}
+        />
+      )}
+
+      {/* Remove Leader Alert */}
+      <Modal
+        isOpen={currentDeleteLead}
+        onClickCancel={() => setCurrentDeleteLead(null)}
+        onClickSubmit={() => removeFromLeader(currentDeleteLead._id)}
+        title="Are You Sure?"
+        submitBtnText="Yes"
+      >
+        Are you sure you want to remove
+        <b> {currentDeleteLead?.name || ""} </b>
+        from leader?
+      </Modal>
     </Modal>
   );
 };

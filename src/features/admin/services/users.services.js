@@ -29,10 +29,18 @@ export const useGetLeadersWithMembers = () => {
   return { getLeaders, isLoading };
 };
 
+export const useGetLeaderWithMembers = () => {
+  const [callApi, { isLoading }] = useAxiosGet();
+  const getLeader = async (leaderId, config = {}) => {
+    return callApi(`/users/leaders/${leaderId}`, { params: config });
+  };
+  return { getLeader, isLoading };
+};
+
 export const useGetAssignedMembers = () => {
   const [callApi, { isLoading }] = useAxiosGet();
   const getAssignedMembers = async (leaderId, config = {}) => {
-    return callApi(`/users/leaders/${leaderId}`, { params: config });
+    return callApi(`/users/leaders/${leaderId}/child`, { params: config });
   };
   return { getAssignedMembers, isLoading };
 };

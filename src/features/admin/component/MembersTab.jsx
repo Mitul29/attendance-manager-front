@@ -1,18 +1,17 @@
 import classNames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { useGetMembers } from "../services/members.services";
-import MakeLeaderModal from "./MakeLeaderModal";
-import { getProfileImgLetters } from "../../../helper/commonHelper";
+
+import MemberCard from "./MemberCard";
+import NoRecord from "./NoRecord";
+import Loader from "../../../core/components/Loader/Loader";
 
 const MembersTab = ({ debouncedSearchVal }) => {
-  const navigate = useNavigate();
-
   const [members, setMembers] = useState([]);
   const [filterdMembers, setFilteredMembers] = useState([]);
-  const [makeUserId, setMakeUserId] = useState(null);
 
-  const { getMembers } = useGetMembers();
+  const { getMembers, isLoading } = useGetMembers();
 
   const loadMembers = useCallback(async ({ search = "" } = {}) => {
     const filter = { ...(search && { search }), isMember: true };
@@ -49,74 +48,20 @@ const MembersTab = ({ debouncedSearchVal }) => {
   return (
     <>
       <div className={classNames("user__card__wrapper")}>
-        {filterdMembers.map((member) => {
-          return (
-            <div
+        {isLoading ? (
+          <Loader />
+        ) : !filterdMembers.length ? (
+          <NoRecord />
+        ) : (
+          filterdMembers.map((member) => (
+            <MemberCard
               key={member._id}
-              className="user__card__box user__card__box__new"
-            >
-              <div className="inner__wrapper">
-                <div className="img__wrapper">
-                  <div className="no__img__letter">
-                    {getProfileImgLetters(member.name)}
-                  </div>
-                </div>
-                <div className="contact__wrapper__sn">
-                  <h4 className="name">
-                    <span className="name__text">{member.name}</span>
-                    <button
-                      className="edit__btn"
-                      type="button"
-                      onClick={() => navigate(`/admin/members/${member._id}`)}
-                    >
-                      <img src="/images/edit__icon.png" alt="" />
-                    </button>
-                  </h4>
-                  <p className="attendance__no">
-                    <span className="label">Attendance No:</span>
-                    <span className="value">{member.attendanceNo || "-"}</span>
-                  </p>
-                  <div className="contact__wrapper phone">
-                    <span className="contact__link">
-                      {member.contact || "-"}
-                    </span>
-                  </div>
-                  <div className="contact__wrapper email">
-                    <span className="contact__link" role="button">
-                      {member.email}
-                    </span>
-                  </div>
-                  <button
-                    className={`make__as__user__btn ${
-                      member.role === "leader" ? "opacity-0" : ""
-                    }`}
-                    type="button"
-                    onClick={() => {
-                      if (member.role !== "leader") {
-                        setMakeUserId(member._id);
-                      }
-                    }}
-                  >
-                    Make as leader
-                  </button>
-                </div>
-
-                {!member.assignTo && member.role !== "leader" && (
-                  <div className="assign__tag__text">Not Assigned</div>
-                )}
-              </div>
-            </div>
-          );
-        })}
+              member={member}
+              loadMembers={loadMembers}
+            />
+          ))
+        )}
       </div>
-      {makeUserId && (
-        <MakeLeaderModal
-          key={makeUserId}
-          makeUserId={makeUserId}
-          setMakeUserId={setMakeUserId}
-          loadMembers={loadMembers}
-        />
-      )}
     </>
   );
 };

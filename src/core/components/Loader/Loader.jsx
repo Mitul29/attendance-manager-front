@@ -2,8 +2,14 @@ import React from "react";
 
 const Loader = () => {
   return (
-    <div className="site__loader">
-      <img src="/images/loader.gif"></img>
+    <div className="block w-full">
+      <div className="flex justify-center">
+        <div class="content__loader">
+          <div />
+          <div />
+          <div />
+        </div>
+      </div>
     </div>
   );
 };

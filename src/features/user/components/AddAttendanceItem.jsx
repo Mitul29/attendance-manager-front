@@ -3,6 +3,7 @@ import { useAddAttendance } from "../../admin/services/attendance.services";
 import useToast from "../../../core/hooks/useToast";
 import Modal from "../../../core/components/Modal";
 import { getProfileImgLetters } from "../../../helper/commonHelper";
+import Button from "../../../core/components/Button";
 
 const AddAttendanceItem = ({ member, date }) => {
   const remarkRef = useRef(null);
@@ -85,18 +86,19 @@ const AddAttendanceItem = ({ member, date }) => {
                 type="button"
                 onClick={() => setOpenRemark(true)}
               >
-                Add Remark
+                {attendance.remark ? "Update" : "Add"} Remark
               </button>
             </p>
           </div>
           <div className="save__btn__wrapper">
-            <button
+            <Button
               className="save__btn"
+              isLoading={addAttLoader}
               disabled={attendance.present === null || addAttLoader}
               onClick={saveAttendance}
             >
               Save
-            </button>
+            </Button>
           </div>
         </div>
       </div>

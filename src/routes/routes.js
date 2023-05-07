@@ -1,17 +1,30 @@
 import React from "react";
-import AddMember from "../features/admin/pages/AddMember";
-import Members from "../features/admin/pages/Members";
-import AddAttendance from "../features/user/pages/AddAttendance";
-import AssignedMembers from "../features/user/pages/AssignedMembers";
-import AttendanceReport from "../features/user/pages/AttendanceReport";
-import Leaders from "../features/admin/pages/Leaders";
+import AdminFullReport from "../features/admin/pages/Report/AdminFullReport";
 
+const AddMember = React.lazy(() =>
+  import("../features/admin/pages/Member/AddMember")
+);
+const Members = React.lazy(() =>
+  import("../features/admin/pages/Member/Members")
+);
+const AddAttendance = React.lazy(() =>
+  import("../features/user/pages/AddAttendance")
+);
+const AssignedMembers = React.lazy(() =>
+  import("../features/user/pages/AssignedMembers")
+);
+const AttendanceReport = React.lazy(() =>
+  import("../features/user/pages/AttendanceReport")
+);
+const Leaders = React.lazy(() =>
+  import("../features/admin/pages/Leader/Leaders")
+);
+const LeadersChild = React.lazy(() =>
+  import("../features/admin/pages/Leader/LeadersChild")
+);
 const Login = React.lazy(() =>
   import("../features/authentication/pages/Login")
 );
-
-const AdminHome = React.lazy(() => import("../features/admin/pages/AdminHome"));
-const Home = React.lazy(() => import("../features/user/pages/Home"));
 
 const NotAuthorized = React.lazy(() =>
   import("../features/common/pages/NotAuthorized")
@@ -49,9 +62,23 @@ export const routes = [
     requiresAuth: true,
   },
   {
+    path: "/admin/leaders/:id/child",
+    name: "AdminLeadersChild",
+    component: <LeadersChild />,
+    roles: ["admin"],
+    requiresAuth: true,
+  },
+  {
     path: "/admin/members/:id",
     name: "AddMember",
     component: <AddMember />,
+    roles: ["admin"],
+    requiresAuth: true,
+  },
+  {
+    path: "/admin/report",
+    name: "AdminReport",
+    component: <AdminFullReport />,
     roles: ["admin"],
     requiresAuth: true,
   },
@@ -82,6 +109,13 @@ export const routes = [
     name: "AttendanceReport",
     component: <AttendanceReport />,
     roles: ["leader"],
+    requiresAuth: true,
+  },
+  {
+    path: "/report/:leaderId",
+    name: "AttendanceReportChild",
+    component: <AttendanceReport />,
+    roles: ["admin", "leader"],
     requiresAuth: true,
   },
 

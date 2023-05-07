@@ -1,32 +1,26 @@
 import _ from "lodash";
 import { format } from "date-fns";
+
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import { selectCurrentUser } from "../../../redux/modules/authSlice";
-import { useGetAllAttendance } from "../../admin/services/attendance.services";
-import useDebounce from "../../../core/hooks/useDebounce";
-import AttendanceReportItem from "../components/AttendanceReportItem";
-import Header from "../../../core/components/Header";
-import Loader from "../../../core/components/Loader/Loader";
-import NoRecord from "../../admin/component/NoRecord";
+import useDebounce from "../../../../core/hooks/useDebounce";
+import { useGetAllAttendance } from "../../services/attendance.services";
+
+import AttendanceReportItem from "../../../user/components/AttendanceReportItem";
+import Header from "../../../../core/components/Header";
+import Loader from "../../../../core/components/Loader/Loader";
+import NoRecord from "../../component/NoRecord";
+import useDownloadExcel from "../../hooks/useDownloadExcel";
+import Button from "../../../../core/components/Button";
 
 const TODAY_DATE = format(new Date(), "yyyy-MM-dd");
 
-const AttendanceReport = () => {
-  const params = useParams();
-  const navigate = useNavigate();
-
-  const currentUser = useSelector(selectCurrentUser);
-
-  const leaderId = params.leaderId || currentUser._id;
-
+const AdminFullReport = () => {
   const [search, setSearch] = useState("");
   const debouncedSearchVal = useDebounce(search);
+  const { downloadFullReport } = useDownloadExcel();
 
   const [currentFilters, setCurrentFilters] = useState({
     dateFrom: TODAY_DATE,
@@ -37,7 +31,7 @@ const AttendanceReport = () => {
   useEffect(() => {
     const newFilters = { ...currentFilters, search: debouncedSearchVal };
     setCurrentFilters(newFilters);
-    loadAttendance(newFilters);
+    loadFullAttendance(newFilters);
   }, [debouncedSearchVal]);
 
   const [allMembers, setAllMembers] = useState([]);
@@ -58,21 +52,11 @@ const AttendanceReport = () => {
   const { getAllAttendance, isLoading } = useGetAllAttendance();
 
   useEffect(() => {
-    if (search) {
-      /* Note: resetSearch() Auto load latest members attendance
-         due to useEffect depandancy
-         so no need to call below code
-         
-         const filters = { ...currentFilters, search: "" };
-         loadAttendance(filters);
-      */
-      return resetSearch();
-    }
-    loadAttendance();
-  }, [leaderId]);
+    loadFullAttendance();
+  }, []);
 
-  async function loadAttendance(filters = currentFilters) {
-    const data = { ...filters, leaderId };
+  async function loadFullAttendance(filters = currentFilters) {
+    const data = { ...filters };
     const { data: members, error } = await getAllAttendance(data);
 
     if (!error && _.isArray(members)) {
@@ -80,12 +64,9 @@ const AttendanceReport = () => {
     }
   }
 
-  const resetSearch = () => {
-    setSearch("");
-    setCurrentFilters({ ...currentFilters, search: "" });
-  };
+  const applyFilters = () => loadFullAttendance();
 
-  const applyFilters = () => loadAttendance();
+  const downloadReport = () => downloadFullReport(allMembers);
 
   return (
     <div className="report__page">
@@ -96,12 +77,15 @@ const AttendanceReport = () => {
         alt="back-img"
       />
       <div className="report__page__details__wrapper">
-        {params.leaderId && (
-          <button className="back__btn flex mb-2" onClick={() => navigate(-1)}>
-            <FontAwesomeIcon className="mr-2" icon={faArrowLeft} />
-            Back
-          </button>
-        )}
+        <div className="flex pb-2">
+          <Button
+            className="btn-primary"
+            icon={<FontAwesomeIcon icon={faDownload} />}
+            onClick={downloadReport}
+          >
+            Download Report
+          </Button>
+        </div>
         <div className="report__page__filter">
           <div className="search__wrapper">
             <input
@@ -162,6 +146,7 @@ const AttendanceReport = () => {
                 key={member._id}
                 member={member}
                 filterdDates={filterdDates}
+                disableChildReport
               />
             ))
           )}
@@ -172,4 +157,4 @@ const AttendanceReport = () => {
   );
 };
 
-export default AttendanceReport;
+export default AdminFullReport;

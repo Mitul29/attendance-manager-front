@@ -11,6 +11,42 @@ html,
 		h1,h2,h3,h4,h5,h6,p{
 			margin:0px;
 		}
+		.content__loader {
+			display: inline-block;
+			position: relative;
+			width: 80px;
+			height: 80px;
+		}
+		.content__loader div {
+			display: inline-block;
+			position: absolute;
+			left: 8px;
+			width: 16px;
+			background: #a47046;
+			animation: content__loader 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+		}
+		.content__loader div:nth-child(1) {
+			left: 8px;
+			animation-delay: -0.24s;
+		}
+		.content__loader div:nth-child(2) {
+			left: 32px;
+			animation-delay: -0.12s;
+		}
+		.content__loader div:nth-child(3) {
+			left: 56px;
+			animation-delay: 0;
+		}
+		@keyframes content__loader {
+			0% {
+				top: 8px;
+				height: 64px;
+			}
+			50%, 100% {
+				top: 24px;
+				height: 32px;
+			}
+		}
 		.site__loader{
 			position:fixed;
 			top:0px;
@@ -82,6 +118,22 @@ html,
 		}
 		.custom__select__input{
 			padding:0px 0px !important;
+		}
+		.btn-primary {
+			padding: 10px 15px 15px 15px;
+			background-color: #a47046;
+			border: none;
+			border-radius: 7px;
+			font-size: 16px;
+			text-align: center;
+			color: #ffffff !important;
+			font-weight: 600;
+			min-width: 160px;
+			transition:0.5s;
+			cursor:pointer;
+		}
+		.btn-primary:hover{
+			background-color:#7b502c;
 		}
 		.login__form .form__group .custom__select__input{
 			padding:0px 0px !important;	
@@ -1646,4 +1698,26 @@ html,
 			.report__page__details__wrapper .inner__cn {
 				max-height: calc(100vh - 220px);
 			}
+		}
+		.back__btn {
+			color: #a47046;
+			background-color:transparent;
+			border-radius: 5px;
+			padding: 8px;
+			transition:0.5s;
+			cursor:pointer;
+		}
+			
+		.back__btn:hover{
+			background-color:#a47046;
+			color: #ffffff;
+		}
+
+		.view__member__main__title{
+			font-size:26px;
+			line-height:32px;
+			margin-bottom:20px;
+		}
+		.view__member__main__title .name{
+			color:#a47046;
 		}

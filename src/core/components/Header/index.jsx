@@ -1,8 +1,8 @@
 import React from "react";
 import classNames from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { logOut, selectCurrentUser } from "../../../redux/modules/authSlice";
-import { useDispatch, useSelector } from "react-redux";
 
 function Header() {
   const location = useLocation();
@@ -12,6 +12,11 @@ function Header() {
   const currentUser = useSelector(selectCurrentUser);
 
   const adminLinks = [
+    {
+      label: "Report",
+      onClick: () => navigate("/admin/report"),
+      isActive: location.pathname.includes("report"),
+    },
     {
       label: "Leaders",
       onClick: () => navigate("/admin/leaders"),

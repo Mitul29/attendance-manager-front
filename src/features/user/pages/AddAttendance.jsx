@@ -5,9 +5,10 @@ import Modal from "../../../core/components/Modal";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../redux/modules/authSlice";
 import { useGetAttendanceByLeaderId } from "../../admin/services/attendance.services";
-import AddAttendanceItem from "./AddAttendanceItem";
-import SiteLoader from "../../../core/components/SiteLoader";
+import AddAttendanceItem from "../components/AddAttendanceItem";
 import Header from "../../../core/components/Header";
+import Loader from "../../../core/components/Loader/Loader";
+import NoRecord from "../../admin/component/NoRecord";
 
 const TODAY_DATE = format(new Date(), "yyyy-MM-dd");
 
@@ -39,10 +40,6 @@ const AddAttendance = () => {
     }
   };
 
-  if (isLoading) {
-    return <SiteLoader />;
-  }
-
   return (
     <>
       <div className="view__member__page attendance__page">
@@ -58,14 +55,20 @@ const AddAttendance = () => {
           </h2>
           <div className="contant__wrapper">
             <div className="user__card__wrapper">
-              {assignedMembers.map((member) => (
-                <AddAttendanceItem
-                  key={member._id}
-                  leader={currentUser}
-                  member={member}
-                  date={attendanceDate.value}
-                />
-              ))}
+              {isLoading ? (
+                <Loader />
+              ) : !assignedMembers.length ? (
+                <NoRecord />
+              ) : (
+                assignedMembers.map((member) => (
+                  <AddAttendanceItem
+                    key={member._id}
+                    leader={currentUser}
+                    member={member}
+                    date={attendanceDate.value}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -75,7 +78,7 @@ const AddAttendance = () => {
       <Modal
         title="Select Date of Attendance"
         isOpen={showSelectDate}
-        closeModal={() => navigate("/")}
+        closeModal={() => navigate(-1)}
         showHeaderClose={false}
         onClickSubmit={() => {
           if (!attendanceDate.isValid || !attendanceDate.value) {
