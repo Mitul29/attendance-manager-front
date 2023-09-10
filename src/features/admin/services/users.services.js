@@ -5,6 +5,14 @@ import {
   useAxiosPut,
 } from "../../../core/hooks/useAxios";
 
+export const useGetUsersHierarchy = () => {
+  const [callApi, { isLoading }] = useAxiosGet();
+  const getUsersHierarchy = async (config = {}) => {
+    return callApi(`/users/hierarchy`, { params: config });
+  };
+  return { getUsersHierarchy, isLoading };
+};
+
 export const useGetUsers = () => {
   const [callApi, { isLoading }] = useAxiosGet();
   const getUsers = async (config = {}) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -14,8 +14,9 @@ import useToast from "../../../../core/hooks/useToast";
 import Header from "../../../../core/components/Header";
 import Loader from "../../../../core/components/Loader/Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faBackward } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../../../core/components/Button";
+// import { useGetUsersHierarchy } from "../../services/users.services";
 
 const memberValidation = yup.object().shape({
   name: yup.string().required("name is required."),
@@ -50,12 +51,20 @@ const AddMember = () => {
   const { editMember, isLoading: editMemberLoader } = useEditMember();
   const { getMember, isLoading: getMembersLoader } = useGetMember();
   const { getMembers, isLoading: getLeadersLoader } = useGetMembers();
+  // const { getUsersHierarchy } = useGetUsersHierarchy();
 
   const isEditMode = params.id !== "add";
 
   const assignTo = watch("assignTo");
 
   const [leaders, setLeaders] = useState([]);
+
+  function flattenedChildren(items) {
+    return items.flatMap((item) => {
+      const children = item.children || [];
+      return [item, ...flattenedChildren(children)];
+    });
+  }
 
   const loadLeaderOptions = async () => {
     const { data, error } = await getMembers({ isLeader: true });
@@ -70,8 +79,36 @@ const AddMember = () => {
     }
   };
 
+  // const loadLeaderOptionsWithoutItsChild = async () => {
+  //   const { data, error } = await getMembers({ isLeader: true });
+  //   if (!error && Array.isArray(data)) {
+  //     const allLeaders = data
+  //       .map((leader) => {
+  //         return { label: leader.name, value: leader._id };
+  //       })
+  //       .filter((l) => l.value !== params.id);
+
+  //     const res = await getUsersHierarchy({ leaderId: params.id });
+  //     if (!res.error && Array.isArray(res.data)) {
+  //       const childLeaders = res.data
+  //         .flatMap((item) => {
+  //           const children = item.children || [];
+  //           return [item, ...flattenedChildren(children)];
+  //         })
+  //         .filter((item) => item.role === "leader")
+  //         .map((item) => item._id);
+
+  //       const withOutItsChild = allLeaders.filter(
+  //         (item) => !childLeaders.includes(item.value)
+  //       );
+  //       setLeaders(withOutItsChild);
+  //     }
+  //   }
+  // };
+
   const loadEditedMember = async () => {
     const { data, error } = await getMember(params.id);
+
     if (!error && data) {
       reset({
         name: data.name,
@@ -81,6 +118,12 @@ const AddMember = () => {
         address: data.address,
         assignTo: data.assignTo,
       });
+
+      // if (data.role !== "leader") {
+      //   loadLeaderOptions();
+      // } else {
+      //   loadLeaderOptionsWithoutItsChild();
+      // }
     }
   };
 
@@ -89,6 +132,9 @@ const AddMember = () => {
     if (params.id !== "add") {
       loadEditedMember();
     }
+    // else {
+    //   loadLeaderOptions();
+    // }
   }, [isEditMode]);
 
   const onSubmit = async (formValues) => {

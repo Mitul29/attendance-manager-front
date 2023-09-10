@@ -4,7 +4,7 @@ const Loader = () => {
   return (
     <div className="block w-full">
       <div className="flex justify-center">
-        <div class="content__loader">
+        <div className="content__loader">
           <div />
           <div />
           <div />
